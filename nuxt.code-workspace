@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "path": "./server",
+      "name": "Server"
+    },
+    {
+      "path": "./",
+      "name": "Root"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "biomejs.biome",
+      "dannyconnell.split-html-attributes",
+      "vue.volar",
+      "byeful.workspace-color"
+    ]
+  },
+  "settings": {
+    "workbench.colorCustomizations": {},
+    "biome.projects": []
+  },
+}
