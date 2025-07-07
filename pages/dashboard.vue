@@ -14,12 +14,17 @@
           <template #header>
             <h3 class="text-lg font-semibold">Actions rapides</h3>
           </template>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="flex gap-4">
+            <AddAccountForm
+              trigger-label="Nouveau Compte"
+              trigger-color="primary"
+              trigger-variant="soft"
+              trigger-icon="i-heroicons-plus-circle"
+            />
             <UButton
               color="error"
               variant="soft"
               icon="i-heroicons-arrow-right-on-rectangle"
-              block
               @click="handleLogout"
             >
               Déconnexion
@@ -33,6 +38,9 @@
 
 <script setup lang="ts">
 import type { BreadcrumbItem } from '@nuxt/ui'
+import { Life } from '@/core/types/life'
+import { AccountType } from '@/core/types/account'
+import AddAccountForm from '~/components/accounts/AddAccountForm.vue'
 
 definePageMeta({
   layout: 'default',

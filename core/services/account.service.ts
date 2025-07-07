@@ -1,5 +1,6 @@
 import { Life } from '../types/life'
 import { AccountType, type Account } from '../types/account'
+import { TransactionType } from '../types/transaction'
 
 export class AccountService {
   constructor(private prisma: any) {}
@@ -67,6 +68,57 @@ export class AccountService {
 
     if (!account) {
       return null
+    }
+
+    return {
+      id: account.id.toString(),
+      name: account.name,
+      type: this.mapAccountType(account.type),
+      life: this.mapLife(account.life),
+      balance: account.balance,
+      currency: 'EUR',
+      description: account.description,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  }
+
+  async create(data: {
+    life: string
+    type: string
+    name: string
+    description?: string
+    rib?: string
+    balance: number
+  }): Promise<Account> {
+    if (!this.prisma) {
+      throw new Error('Prisma client not initialized')
+    }
+
+    // Créer le compte
+    const account = await this.prisma.account.create({
+      data: {
+        life: data.life,
+        type: data.type,
+        name: data.name,
+        description: data.description || '',
+        rib: data.rib || '',
+        balance: data.balance
+      }
+    })
+
+    // Si le solde initial est > 0, créer une transaction de dépôt initial
+    if (data.balance > 0) {
+      await this.prisma.transaction.create({
+        data: {
+          accountId: account.id,
+          type: TransactionType.INCOME,
+          amount: data.balance,
+          label: 'Dépôt initial',
+          date: new Date()
+        }
+      })
     }
 
     return {

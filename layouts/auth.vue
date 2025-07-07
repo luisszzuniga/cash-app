@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 flex flex-col">
     <!-- Logo en haut -->
     <div class="flex justify-center pt-8">
       <div class="flex items-center space-x-2">
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Contenu principal -->
-    <main class="flex-1">
+    <main class="flex-1 flex flex-col justify-center p-4">
       <slot />
     </main>
 

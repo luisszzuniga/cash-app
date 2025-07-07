@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default'
+  layout: 'auth',
 });
 
 // Redirection vers le dashboard si connecté

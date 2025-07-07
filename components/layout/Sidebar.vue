@@ -11,10 +11,16 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import type { SidebarData } from '~/core/types/account'
 
 // Récupérer les données de la sidebar
-const { data: sidebarData, pending, error } = await useLazyAsyncData(
+const { data: sidebarData, pending, error, refresh } = await useLazyAsyncData(
   'sidebar',
   () => $fetch('/api/sidebar')
 )
+
+// Écouter l'événement de rechargement des comptes
+const { on } = useEvents()
+on('reload-accounts', () => {
+  refresh()
+})
 
 // Construire les items de navigation
 const navigationItems = computed<NavigationMenuItem[][]>(() => {
