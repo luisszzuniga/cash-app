@@ -1,0 +1,498 @@
+# 🎯 Bonnes Pratiques Techniques - Cash App
+
+> **Objectif** : Centraliser toutes les bonnes pratiques techniques du projet pour garantir un cadre clair, cohérent et partagé entre tous les membres de l'équipe.
+
+---
+
+## 📋 Table des matières
+
+- [🔧 Pratiques Communes](#-pratiques-communes)
+- [🎨 Front-end](#-front-end)
+- [⚙️ Back-end](#️-back-end)
+- [🏗️ Architecture](#️-architecture)
+- [🧪 Tests](#-tests)
+- [📚 Ressources](#-ressources)
+
+---
+
+## 🔧 Pratiques Communes
+
+### TypeScript Strict Mode
+
+**Règle** : Typage strict TypeScript partout, sans exception.
+
+```typescript
+// ✅ Bon - Typage strict
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+const getUser = async (id: string): Promise<User | null> => {
+  // ...
+};
+
+// ❌ Mauvais - Any ou pas de typage
+const getUser = async (id: any) => {
+  // ...
+};
+```
+
+**Configuration** : Vérifiez que `tsconfig.json` contient :
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  }
+}
+```
+
+### Architecture Domain-Based
+
+**Règle** : Organiser le code par domaines métier, pas par types techniques.
+
+```
+📁 Structure recommandée :
+├── domains/
+│   ├── user/
+│   │   ├── components/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── composables/
+│   ├── payment/
+│   │   ├── components/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── composables/
+│   └── transaction/
+│       ├── components/
+│       ├── services/
+│       ├── types/
+│       └── composables/
+```
+
+### Nommage et Conventions
+
+- **Fichiers** : `kebab-case` (ex: `user-profile.vue`)
+- **Composants** : `PascalCase` (ex: `UserProfile.vue`)
+- **Variables/Fonctions** : `camelCase` (ex: `getUserProfile`)
+- **Constantes** : `UPPER_SNAKE_CASE` (ex: `API_BASE_URL`)
+- **Types/Interfaces** : `PascalCase` (ex: `UserProfile`)
+
+---
+
+## 🎨 Front-end
+
+### Composants Réutilisables
+
+**Règle** : Créer des composants atomiques, réutilisables et testables.
+
+```vue
+<!-- ✅ Bon - Composant réutilisable avec props typées -->
+<template>
+  <div class="card" :class="variant">
+    <slot name="header" />
+    <div class="card-body">
+      <slot />
+    </div>
+    <slot name="footer" />
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  variant?: 'default' | 'primary' | 'secondary';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'default'
+});
+</script>
+```
+
+### Aucun Appel API Direct dans les Composants
+
+**Règle** : Les composants ne doivent jamais appeler directement les APIs. Utiliser des services centralisés.
+
+```typescript
+// ✅ Bon - Service API centralisé
+// services/user.service.ts
+export class UserService {
+  static async getUser(id: string): Promise<User> {
+    const response = await $fetch(`/api/users/${id}`);
+    return response;
+  }
+  
+  static async updateUser(id: string, data: Partial<User>): Promise<User> {
+    const response = await $fetch(`/api/users/${id}`, {
+      method: 'PUT',
+      body: data
+    });
+    return response;
+  }
+}
+
+// ✅ Bon - Composant qui utilise le service
+// components/UserProfile.vue
+<script setup lang="ts">
+const { data: user, pending, error } = await useLazyAsyncData(
+  'user',
+  () => UserService.getUser(props.userId)
+);
+</script>
+```
+
+### Gestion d'État avec Pinia
+
+**Règle** : Utiliser Pinia pour tous les états globaux, pas Vuex.
+
+```typescript
+// stores/user.store.ts
+export const useUserStore = defineStore('user', () => {
+  const user = ref<User | null>(null);
+  const isAuthenticated = computed(() => !!user.value);
+  
+  const setUser = (newUser: User) => {
+    user.value = newUser;
+  };
+  
+  const logout = () => {
+    user.value = null;
+  };
+  
+  return {
+    user: readonly(user),
+    isAuthenticated,
+    setUser,
+    logout
+  };
+});
+```
+
+### Composables pour la Logique Métier
+
+**Règle** : Extraire la logique métier dans des composables réutilisables.
+
+```typescript
+// composables/useUser.ts
+export const useUser = () => {
+  const userStore = useUserStore();
+  
+  const fetchUser = async (id: string) => {
+    try {
+      const user = await UserService.getUser(id);
+      userStore.setUser(user);
+      return user;
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+      throw error;
+    }
+  };
+  
+  return {
+    user: userStore.user,
+    isAuthenticated: userStore.isAuthenticated,
+    fetchUser,
+    logout: userStore.logout
+  };
+};
+```
+
+---
+
+## ⚙️ Back-end
+
+### Services Backend Découpés et Testables
+
+**Règle** : Les routes n'appellent jamais directement la BDD. Utiliser des services partagés via `/core`.
+
+```typescript
+// ✅ Bon - Service backend découpé
+// core/services/user.service.ts
+export class UserService {
+  constructor(private prisma: PrismaClient) {}
+  
+  async findById(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: { profile: true }
+    });
+  }
+  
+  async create(data: CreateUserData): Promise<User> {
+    return this.prisma.user.create({
+      data,
+      include: { profile: true }
+    });
+  }
+  
+  async update(id: string, data: UpdateUserData): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+      include: { profile: true }
+    });
+  }
+}
+
+// ✅ Bon - Route qui utilise le service
+// server/api/users/[id].get.ts
+export default defineEventHandler(async (event) => {
+  const id = getRouterParam(event, 'id');
+  const userService = new UserService(prisma);
+  
+  try {
+    const user = await userService.findById(id);
+    if (!user) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Utilisateur non trouvé'
+      });
+    }
+    return user;
+  } catch (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Erreur serveur'
+    });
+  }
+});
+```
+
+### Gestion d'Erreurs Centralisée
+
+**Règle** : Centraliser la gestion d'erreurs avec des types d'erreur spécifiques.
+
+```typescript
+// core/errors/app-error.ts
+export class AppError extends Error {
+  constructor(
+    public statusCode: number,
+    public message: string,
+    public code?: string
+  ) {
+    super(message);
+    this.name = 'AppError';
+  }
+}
+
+export class ValidationError extends AppError {
+  constructor(message: string) {
+    super(400, message, 'VALIDATION_ERROR');
+  }
+}
+
+export class NotFoundError extends AppError {
+  constructor(resource: string) {
+    super(404, `${resource} non trouvé`, 'NOT_FOUND');
+  }
+}
+
+// core/middleware/error-handler.ts
+export default defineEventHandler((event) => {
+  event.node.res.on('error', (error) => {
+    if (error instanceof AppError) {
+      throw createError({
+        statusCode: error.statusCode,
+        statusMessage: error.message
+      });
+    }
+    
+    // Log l'erreur pour le debugging
+    console.error('Erreur non gérée:', error);
+    
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Erreur interne du serveur'
+    });
+  });
+});
+```
+
+### Validation des Données
+
+**Règle** : Valider toutes les données d'entrée avec Zod ou Joi.
+
+```typescript
+// core/schemas/user.schema.ts
+import { z } from 'zod';
+
+export const createUserSchema = z.object({
+  email: z.string().email('Email invalide'),
+  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+  password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+});
+
+export const updateUserSchema = createUserSchema.partial();
+
+// server/api/users.post.ts
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  
+  try {
+    const validatedData = createUserSchema.parse(body);
+    const userService = new UserService(prisma);
+    const user = await userService.create(validatedData);
+    return user;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Données invalides',
+        data: error.errors
+      });
+    }
+    throw error;
+  }
+});
+```
+
+---
+
+## 🏗️ Architecture
+
+### Structure des Dossiers
+
+```
+📁 Structure recommandée pour un projet Nuxt 3 :
+├── app.vue
+├── nuxt.config.ts
+├── tsconfig.json
+├── package.json
+├── core/                          # Code partagé entre front/back
+│   ├── services/                  # Services métier
+│   ├── types/                     # Types TypeScript partagés
+│   ├── utils/                     # Utilitaires
+│   ├── constants/                 # Constantes
+│   └── errors/                    # Classes d'erreur
+├── server/                        # API routes Nuxt
+│   ├── api/                       # Endpoints API
+│   ├── middleware/                # Middleware serveur
+│   └── utils/                     # Utilitaires serveur
+├── components/                    # Composants Vue
+│   ├── ui/                        # Composants UI réutilisables
+│   └── domain/                    # Composants spécifiques au domaine
+├── composables/                   # Composables Vue
+├── stores/                        # Stores Pinia
+├── pages/                         # Pages de l'application
+├── layouts/                       # Layouts
+├── public/                        # Assets statiques
+└── layers/                        # Modules Nuxt (si applicable)
+```
+
+### Séparation des Responsabilités
+
+**Règle** : Chaque couche a une responsabilité claire et ne dépend que des couches inférieures.
+
+```
+📊 Architecture en couches :
+┌─────────────────────────────────────┐
+│           Pages/Components          │ ← Interface utilisateur
+├─────────────────────────────────────┤
+│           Composables               │ ← Logique métier Vue
+├─────────────────────────────────────┤
+│            Services                 │ ← Appels API
+├─────────────────────────────────────┤
+│         API Routes                  │ ← Contrôleurs
+├─────────────────────────────────────┤
+│         Core Services               │ ← Logique métier
+├─────────────────────────────────────┤
+│         Base de données             │ ← Persistance
+└─────────────────────────────────────┘
+```
+
+---
+
+## 🧪 Tests
+
+### Tests Unitaires
+
+**Règle** : Tester tous les services et composables.
+
+```typescript
+// tests/unit/services/user.service.test.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { UserService } from '~/core/services/user.service';
+
+describe('UserService', () => {
+  let userService: UserService;
+  
+  beforeEach(() => {
+    userService = new UserService(mockPrisma);
+  });
+  
+  it('should find user by id', async () => {
+    const mockUser = { id: '1', name: 'John' };
+    mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+    
+    const result = await userService.findById('1');
+    
+    expect(result).toEqual(mockUser);
+    expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+      where: { id: '1' }
+    });
+  });
+});
+```
+
+### Tests d'Intégration
+
+**Règle** : Tester les endpoints API.
+
+```typescript
+// tests/integration/api/users.test.ts
+import { describe, it, expect } from 'vitest';
+import { createEvent } from 'h3';
+
+describe('Users API', () => {
+  it('should return 404 for non-existent user', async () => {
+    const event = createEvent({
+      method: 'GET',
+      url: '/api/users/999'
+    });
+    
+    const response = await getUserHandler(event);
+    
+    expect(response.statusCode).toBe(404);
+  });
+});
+```
+
+---
+
+## 📚 Ressources
+
+### Outils Recommandés
+
+- **Linting/Formatting** : Biome (déjà configuré)
+- **Tests** : Vitest + Vue Test Utils
+- **Validation** : Zod
+- **Base de données** : Prisma
+- **État global** : Pinia
+- **HTTP Client** : $fetch (Nuxt 3)
+
+### Liens Utiles
+
+- [Documentation Nuxt 3](https://nuxt.com/docs)
+- [Guide TypeScript Nuxt](https://nuxt.com/docs/guide/concepts/typescript)
+- [Documentation Pinia](https://pinia.vuejs.org/)
+- [Documentation Prisma](https://www.prisma.io/docs)
+- [Documentation Zod](https://zod.dev/)
+
+### Checklist de Code Review
+
+- [ ] Typage TypeScript strict
+- [ ] Pas d'appel API direct dans les composants
+- [ ] Services centralisés utilisés
+- [ ] Gestion d'erreurs appropriée
+- [ ] Tests unitaires présents
+- [ ] Nommage cohérent
+- [ ] Documentation des fonctions complexes
+- [ ] Pas de code dupliqué
+
+---
+
+> **Note** : Ce document est vivant et doit être mis à jour régulièrement avec l'évolution du projet et les retours d'expérience de l'équipe. 
