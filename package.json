@@ -11,12 +11,15 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@nuxt/ui": "^3.2.0",
     "@pinia/nuxt": "^0.11.1",
     "@prisma/client": "^6.11.1",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^6.0.0",
     "chart.js": "^4.5.0",
     "nuxt": "^3.15.0",
     "nuxt-auth-utils": "^0.5.20",
@@ -30,9 +33,14 @@
   "packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@nuxt/test-utils": "^3.19.2",
     "@vitest/ui": "^3.2.4",
+    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.21",
+    "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
+    "playwright-core": "^1.53.2",
+    "tsx": "^4.20.3",
     "vitest": "^3.2.4"
   }
 }
