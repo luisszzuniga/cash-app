@@ -13,8 +13,13 @@ export interface BudgetCategory {
   amount: number
   dayOfMonth?: number
   isActive: boolean
+  shouldBeCopiedNextMonth?: boolean
   createdAt: Date
   updatedAt: Date
+}
+
+export interface BudgetCategoryWithSpent extends BudgetCategory {
+  spentAmount: number
 }
 
 export interface CreateBudgetCategoryData {

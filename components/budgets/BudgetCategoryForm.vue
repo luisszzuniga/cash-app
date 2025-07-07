@@ -1,6 +1,7 @@
 <template>
-  <UModal v-model:open="open">
+  <UModal v-model:open="isOpen">
     <UButton
+      v-if="showTrigger"
       :label="triggerLabel"
       :color="triggerColor"
       :variant="triggerVariant"
@@ -99,10 +100,12 @@ import type { BudgetCategory } from '~/core/types/budget'
 
 // Props pour personnaliser le bouton trigger et pré-remplir les champs
 interface Props {
+  modelValue?: boolean
   triggerLabel?: string
   triggerColor?: 'primary' | 'info' | 'error' | 'success' | 'secondary' | 'warning' | 'neutral'
   triggerVariant?: 'soft' | 'link' | 'solid' | 'outline' | 'subtle' | 'ghost'
   triggerIcon?: string
+  showTrigger?: boolean
   // Pour l'édition
   budgetCategory?: BudgetCategory
   // Valeurs par défaut pour la création
@@ -114,19 +117,30 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
   triggerLabel: 'Nouvelle Catégorie',
   triggerColor: 'primary',
   triggerVariant: 'soft',
   triggerIcon: 'i-heroicons-plus-circle',
+  showTrigger: true,
   defaultLife: Life.PRO,
   defaultType: BudgetType.EXPENSE,
   defaultAmount: 0,
   defaultDayOfMonth: undefined
 })
 
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  'budget-saved': []
+}>()
+
 const schema = budgetCategoryFormSchema
 
-const open = ref(false)
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
 const isEditing = computed(() => !!props.budgetCategory)
 
 // État réactif pré-rempli avec les données existantes ou par défaut
@@ -162,7 +176,7 @@ const resetForm = () => {
 }
 
 // Surveiller l'ouverture/fermeture de la modale
-watch(open, (isOpen) => {
+watch(isOpen, (isOpen) => {
   if (!isOpen) {
     resetForm()
   }
@@ -208,12 +222,15 @@ async function onSubmit(event: FormSubmitEvent<BudgetCategoryFormData>) {
       color: 'success'
     })
 
-    open.value = false
+    emit('update:modelValue', false)
     resetForm()
 
     // Émettre l'événement pour recharger les budgets
-    const { emit } = useEvents()
-    emit('reload-budgets')
+    const { emit: emitEvents } = useEvents()
+    emitEvents('reload-budgets')
+    
+    // Émettre l'événement local
+    emit('budget-saved')
   } catch (error: any) {
     toast.add({
       title: 'Erreur',

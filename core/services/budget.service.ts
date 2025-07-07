@@ -118,6 +118,44 @@ export class BudgetService {
     }))
   }
 
+  async findByMonthAndYear(year: number, month: number, life?: 'pro' | 'perso'): Promise<BudgetCategory[]> {
+    if (!this.prisma) {
+      throw new Error('Prisma client not initialized')
+    }
+
+    const whereClause: any = {
+      deletedAt: null,
+      year: BigInt(year),
+      month: BigInt(month)
+    }
+
+    if (life) {
+      whereClause.life = life
+    }
+
+    const budgetCategories = await this.prisma.budget.findMany({
+      where: whereClause,
+      orderBy: [
+        { life: 'asc' },
+        { type: 'asc' },
+        { name: 'asc' }
+      ]
+    })
+
+    return budgetCategories.map((category: any) => ({
+      id: category.id.toString(),
+      life: this.mapLife(category.life),
+      type: this.mapBudgetType(category.type),
+      name: category.name,
+      amount: Number(category.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: category.prelevementDay ? Number(category.prelevementDay) : undefined,
+      isActive: !category.deletedAt,
+      shouldBeCopiedNextMonth: category.shouldBeCopiedNextMonth,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }))
+  }
+
   private mapLife(dbLife: string): Life {
     switch (dbLife) {
       case 'pro':
