@@ -467,7 +467,6 @@ describe('Users API', () => {
 
 ### Outils Recommandés
 
-- **Linting/Formatting** : Biome (déjà configuré)
 - **Tests** : Vitest + Vue Test Utils
 - **Validation** : Zod
 - **Base de données** : Prisma
