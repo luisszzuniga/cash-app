@@ -19,5 +19,11 @@ export default defineNuxtConfig({
     auth: {
       secret: process.env.AUTH_SECRET || 'your-secret-key-here'
     }
+  },
+
+  vite: {
+    optimizeDeps: {
+      exclude: ['core'],
+    },
   }
 })

@@ -52,6 +52,12 @@
               trigger-variant="soft"
               trigger-icon="i-heroicons-plus-circle"
             />
+            <AddIncomeForm
+              trigger-label="Nouveau Revenu"
+              trigger-color="success"
+              trigger-variant="soft"
+              trigger-icon="i-heroicons-plus-circle"
+            />
             <UButton
               color="error"
               variant="soft"
@@ -72,6 +78,7 @@ import type { BreadcrumbItem } from '@nuxt/ui'
 import { Life } from '@/core/types/life'
 import { AccountType } from '@/core/types/account'
 import AddAccountForm from '~/components/accounts/AddAccountForm.vue'
+import AddIncomeForm from '~/components/transactions/AddIncomeForm.vue'
 import KPICard from '~/components/ui/KPICard.vue'
 import { KPIView } from '~/core/types/kpi'
 import KPIGrid from '~/components/ui/KPIGrid.vue'
