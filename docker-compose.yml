@@ -45,6 +45,14 @@ services:
     networks:
       - cash-app-network
 
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - cash-app-network
+
 networks:
   cash-app-network:
     driver: bridge

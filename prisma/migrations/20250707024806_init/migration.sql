@@ -40,13 +40,13 @@ CREATE TABLE `budgets` (
 -- CreateTable
 CREATE TABLE `transactions` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `account_id` BIGINT NOT NULL,
-    `budget_id` BIGINT NULL,
+    `account_id` BIGINT UNSIGNED NOT NULL,
+    `budget_id` BIGINT UNSIGNED NULL,
     `type` VARCHAR(255) NOT NULL,
     `amount` DOUBLE NOT NULL,
     `label` VARCHAR(255) NOT NULL,
     `date` DATE NOT NULL,
-    `transfer_opposite_transaction_id` BIGINT NULL,
+    `transfer_opposite_transaction_id` BIGINT UNSIGNED NULL,
     `deleted_at` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
@@ -67,7 +67,7 @@ CREATE TABLE `stocks` (
 CREATE TABLE `portfolio_operations` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `transaction_id` BIGINT UNSIGNED NOT NULL,
-    `broker_fees_transaction_id` BIGINT NULL,
+    `broker_fees_transaction_id` BIGINT UNSIGNED NULL,
     `stock_id` BIGINT UNSIGNED NOT NULL,
     `quantity` BIGINT UNSIGNED NOT NULL DEFAULT 1,
     `type` VARCHAR(255) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE `portfolio_operations` (
 -- CreateTable
 CREATE TABLE `portfolio_performance_history` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `account_id` BIGINT NOT NULL,
+    `account_id` BIGINT UNSIGNED NOT NULL,
     `date` DATE NOT NULL,
     `value` BIGINT NOT NULL,
     `performance` BIGINT NOT NULL,
