@@ -1,0 +1,12 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+COPY docker/app/entrypoint.dev.sh /usr/local/bin/entrypoint.dev.sh
+RUN chmod +x /usr/local/bin/entrypoint.dev.sh
+
+EXPOSE ${NUXT_PORT}
+
+USER node
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.dev.sh"]
