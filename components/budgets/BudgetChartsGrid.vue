@@ -31,14 +31,34 @@
       <p class="text-gray-600">Aucun budget trouvé pour cette période</p>
     </div>
 
-    <div v-if="! pending && ! error && budgets.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <BudgetDoughnutChart
-        v-for="budget in budgets"
-        :key="budget.id"
-        :budget="budget"
-        @edit="editBudget"
-        @delete="deleteBudget"
-      />
+    <div v-if="! pending && ! error && budgets.length > 0" class="grid grid-cols-1 xl:grid-cols-5 gap-6">
+      <!-- Grille des graphiques individuels -->
+      <div class="xl:col-span-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ClientOnly>
+          <BudgetDoughnutChart
+            v-for="budget in budgets"
+            :key="budget.id"
+            :budget="budget"
+            @edit="editBudget"
+              @delete="deleteBudget"
+            />
+          </ClientOnly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aperçu global des budgets -->
+    <div class="xl:col-span-1">
+      <ClientOnly>
+      <BudgetOverviewChart
+        :life="life"
+        :year="currentYear"
+        :month="currentMonth"
+        :budgets="budgets"
+        :pending="pending"
+        :error="error"
+      /></ClientOnly>
     </div>
 
     <!-- Modal d'ajout/édition de budget -->
@@ -55,6 +75,7 @@
 import type { BudgetCategory, BudgetCategoryWithSpent } from '~/core/types/budget'
 import MonthYearNavigator from '~/components/budgets/MonthYearNavigator.vue'
 import BudgetDoughnutChart from '~/components/budgets/BudgetDoughnutChart.vue'
+import BudgetOverviewChart from '~/components/budgets/BudgetOverviewChart.vue'
 import BudgetCategoryForm from '~/components/budgets/BudgetCategoryForm.vue'
 
 interface Props {
