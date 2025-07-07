@@ -93,10 +93,10 @@
 
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { budgetCategoryFormSchema, type BudgetCategoryFormData } from '~/core/schemas/budget.schema'
+import { BudgetFormSchema, type BudgetFormData } from '~/core/schemas/budget.schema'
 import { Life } from '~/core/types/life'
 import { BudgetType } from '~/core/types/budget'
-import type { BudgetCategory } from '~/core/types/budget'
+import type { budget } from '~/core/types/budget'
 
 // Props pour personnaliser le bouton trigger et pré-remplir les champs
 interface Props {
@@ -107,7 +107,7 @@ interface Props {
   triggerIcon?: string
   showTrigger?: boolean
   // Pour l'édition
-  budgetCategory?: BudgetCategory
+  budget?: budget
   // Valeurs par défaut pour la création
   defaultLife?: Life
   defaultType?: BudgetType
@@ -134,22 +134,22 @@ const emit = defineEmits<{
   'budget-saved': []
 }>()
 
-const schema = budgetCategoryFormSchema
+const schema = BudgetFormSchema
 
 const isOpen = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
 
-const isEditing = computed(() => !!props.budgetCategory)
+const isEditing = computed(() => !!props.budget)
 
 // État réactif pré-rempli avec les données existantes ou par défaut
-const state = reactive<Partial<BudgetCategoryFormData>>({
-  life: props.budgetCategory?.life || props.defaultLife,
-  type: props.budgetCategory?.type || props.defaultType,
-  name: props.budgetCategory?.name || props.defaultName,
-  amount: props.budgetCategory?.amount || props.defaultAmount,
-  dayOfMonth: props.budgetCategory?.dayOfMonth || props.defaultDayOfMonth
+const state = reactive<Partial<BudgetFormData>>({
+  life: props.budget?.life || props.defaultLife,
+  type: props.budget?.type || props.defaultType,
+  name: props.budget?.name || props.defaultName,
+  amount: props.budget?.amount || props.defaultAmount,
+  dayOfMonth: props.budget?.dayOfMonth || props.defaultDayOfMonth
 })
 
 const isLoading = ref(false)
@@ -168,11 +168,11 @@ const typeOptions = [
 
 // Fonction pour réinitialiser le formulaire
 const resetForm = () => {
-  state.life = props.budgetCategory?.life || props.defaultLife
-  state.type = props.budgetCategory?.type || props.defaultType
-  state.name = props.budgetCategory?.name || props.defaultName
-  state.amount = props.budgetCategory?.amount || props.defaultAmount
-  state.dayOfMonth = props.budgetCategory?.dayOfMonth || props.defaultDayOfMonth
+  state.life = props.budget?.life || props.defaultLife
+  state.type = props.budget?.type || props.defaultType
+  state.name = props.budget?.name || props.defaultName
+  state.amount = props.budget?.amount || props.defaultAmount
+  state.dayOfMonth = props.budget?.dayOfMonth || props.defaultDayOfMonth
 }
 
 // Surveiller l'ouverture/fermeture de la modale
@@ -183,33 +183,33 @@ watch(isOpen, (isOpen) => {
 })
 
 // Surveiller les changements de props pour mettre à jour le formulaire
-watch(() => props.budgetCategory, () => {
-  if (props.budgetCategory) {
-    state.life = props.budgetCategory.life
-    state.type = props.budgetCategory.type
-    state.name = props.budgetCategory.name
-    state.amount = props.budgetCategory.amount
-    state.dayOfMonth = props.budgetCategory.dayOfMonth
+watch(() => props.budget, () => {
+  if (props.budget) {
+    state.life = props.budget.life
+    state.type = props.budget.type
+    state.name = props.budget.name
+    state.amount = props.budget.amount
+    state.dayOfMonth = props.budget.dayOfMonth
   }
 })
 
-async function onSubmit(event: FormSubmitEvent<BudgetCategoryFormData>) {
+async function onSubmit(event: FormSubmitEvent<BudgetFormData>) {
   isLoading.value = true
 
   try {
     let response
     let successMessage
 
-    if (isEditing.value && props.budgetCategory) {
+    if (isEditing.value && props.budget) {
       // Modification
-      response = await $fetch(`/api/budget-categories/${props.budgetCategory.id}`, {
+      response = await $fetch(`/api/budgets/${props.budget.id}`, {
         method: 'PUT' as any,
         body: event.data
       })
       successMessage = `La catégorie "${event.data.name}" a été modifiée`
     } else {
       // Création
-      response = await $fetch('/api/budget-categories', {
+      response = await $fetch('/api/budgets', {
         method: 'POST' as any,
         body: event.data
       })

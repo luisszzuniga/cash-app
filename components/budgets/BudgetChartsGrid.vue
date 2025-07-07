@@ -62,9 +62,9 @@
     </div>
 
     <!-- Modal d'ajout/édition de budget -->
-    <BudgetCategoryForm
+    <BudgetForm
       v-model="showAddBudgetModal"
-      :budget-category="editingBudget"
+      :budget="editingBudget"
       :show-trigger="true"
       @budget-saved="handleBudgetSaved"
     />
@@ -72,11 +72,11 @@
 </template>
 
 <script setup lang="ts">
-import type { BudgetCategory, BudgetCategoryWithSpent } from '~/core/types/budget'
+import type { budget, BudgetWithSpent } from '~/core/types/budget'
 import MonthYearNavigator from '~/components/budgets/MonthYearNavigator.vue'
 import BudgetDoughnutChart from '~/components/budgets/BudgetDoughnutChart.vue'
 import BudgetOverviewChart from '~/components/budgets/BudgetOverviewChart.vue'
-import BudgetCategoryForm from '~/components/budgets/BudgetCategoryForm.vue'
+import BudgetForm from '~/components/budgets/BudgetForm.vue'
 
 interface Props {
   life?: 'pro' | 'perso'
@@ -93,12 +93,12 @@ const props = withDefaults(defineProps<Props>(), {
 const currentYear = ref(props.initialYear)
 const currentMonth = ref(props.initialMonth)
 const showAddBudgetModal = ref(false)
-const editingBudget = ref<BudgetCategory | undefined>(undefined)
+const editingBudget = ref<budget | undefined>(undefined)
 
 // Charger les budgets avec les montants dépensés
 const { data: budgets, pending, error, refresh } = await useLazyAsyncData(
   () => `budgets-with-spent-${currentYear.value}-${currentMonth.value}-${props.life || 'all'}`,
-  () => $fetch<BudgetCategoryWithSpent[]>('/api/budgets/with-spent', {
+  () => $fetch<BudgetWithSpent[]>('/api/budgets/with-spent', {
     params: {
       year: currentYear.value,
       month: currentMonth.value,
@@ -126,17 +126,17 @@ const loadBudgets = () => {
   refresh()
 }
 
-const editBudget = (budget: BudgetCategory) => {
+const editBudget = (budget: budget) => {
   editingBudget.value = budget
   showAddBudgetModal.value = true
 }
 
-const deleteBudget = async (budget: BudgetCategory) => {
+const deleteBudget = async (budget: budget) => {
   const confirmed = await confirm(`Êtes-vous sûr de vouloir supprimer le budget "${budget.name}" ?`)
   
   if (confirmed) {
     try {
-      await $fetch(`/api/budget-categories/${budget.id}`, {
+      await $fetch(`/api/budgets/${budget.id}`, {
         method: 'DELETE'
       })
       

@@ -1,5 +1,5 @@
 import { BudgetService } from '~/core/services/budget.service'
-import { budgetCategoryFormSchema } from '~/core/schemas/budget.schema'
+import { BudgetFormSchema } from '~/core/schemas/budget.schema'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -11,11 +11,11 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Valider les données avec Zod
-    const validatedData = budgetCategoryFormSchema.parse(body)
+    const validatedData = BudgetFormSchema.parse(body)
 
     // Vérifier que la catégorie existe
-    const existingCategory = await budgetService.findById(id!)
-    if (!existingCategory) {
+    const existingBudget = await budgetService.findById(id!)
+    if (!existingBudget) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Catégorie de budget non trouvée'
@@ -23,9 +23,9 @@ export default defineEventHandler(async (event) => {
     }
 
     // Mettre à jour la catégorie de budget
-    const updatedCategory = await budgetService.update(id!, validatedData)
+    const updatedBudget = await budgetService.update(id!, validatedData)
 
-    return updatedCategory
+    return updatedBudget
   } catch (error: any) {
     console.error('Erreur lors de la modification de la catégorie de budget:', error)
     

@@ -1,15 +1,15 @@
 import { Life } from '../types/life'
-import { BudgetType, type BudgetCategory, type CreateBudgetCategoryData, type UpdateBudgetCategoryData } from '../types/budget'
+import { BudgetType, type budget, type CreateBudgetData, type UpdateBudgetData } from '../types/budget'
 
 export class BudgetService {
   constructor(private prisma: any) {}
 
-  async create(data: CreateBudgetCategoryData): Promise<BudgetCategory> {
+  async create(data: CreateBudgetData): Promise<budget> {
     if (!this.prisma) {
       throw new Error('Prisma client not initialized')
     }
 
-    const budgetCategory = await this.prisma.budget.create({
+    const budget = await this.prisma.budget.create({
       data: {
         life: data.life,
         type: data.type,
@@ -24,24 +24,24 @@ export class BudgetService {
     })
 
     return {
-      id: budgetCategory.id.toString(),
-      life: this.mapLife(budgetCategory.life),
-      type: this.mapBudgetType(budgetCategory.type),
-      name: budgetCategory.name,
-      amount: Number(budgetCategory.amount) / 100, // Convertir de centimes en euros
-      dayOfMonth: budgetCategory.prelevementDay ? Number(budgetCategory.prelevementDay) : undefined,
-      isActive: !budgetCategory.deletedAt,
+      id: budget.id.toString(),
+      life: this.mapLife(budget.life),
+      type: this.mapBudgetType(budget.type),
+      name: budget.name,
+      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
+      isActive: !budget.deletedAt,
       createdAt: new Date(),
       updatedAt: new Date()
     }
   }
 
-  async update(id: string, data: UpdateBudgetCategoryData): Promise<BudgetCategory> {
+  async update(id: string, data: UpdateBudgetData): Promise<budget> {
     if (!this.prisma) {
       throw new Error('Prisma client not initialized')
     }
 
-    const budgetCategory = await this.prisma.budget.update({
+    const budget = await this.prisma.budget.update({
       where: { id: BigInt(id) },
       data: {
         life: data.life,
@@ -53,50 +53,50 @@ export class BudgetService {
     })
 
     return {
-      id: budgetCategory.id.toString(),
-      life: this.mapLife(budgetCategory.life),
-      type: this.mapBudgetType(budgetCategory.type),
-      name: budgetCategory.name,
-      amount: Number(budgetCategory.amount) / 100, // Convertir de centimes en euros
-      dayOfMonth: budgetCategory.prelevementDay ? Number(budgetCategory.prelevementDay) : undefined,
-      isActive: !budgetCategory.deletedAt,
+      id: budget.id.toString(),
+      life: this.mapLife(budget.life),
+      type: this.mapBudgetType(budget.type),
+      name: budget.name,
+      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
+      isActive: !budget.deletedAt,
       createdAt: new Date(),
       updatedAt: new Date()
     }
   }
 
-  async findById(id: string): Promise<BudgetCategory | null> {
+  async findById(id: string): Promise<budget | null> {
     if (!this.prisma) {
       throw new Error('Prisma client not initialized')
     }
 
-    const budgetCategory = await this.prisma.budget.findUnique({
+    const budget = await this.prisma.budget.findUnique({
       where: { id: BigInt(id) }
     })
 
-    if (!budgetCategory) {
+    if (!budget) {
       return null
     }
 
     return {
-      id: budgetCategory.id.toString(),
-      life: this.mapLife(budgetCategory.life),
-      type: this.mapBudgetType(budgetCategory.type),
-      name: budgetCategory.name,
-      amount: Number(budgetCategory.amount) / 100, // Convertir de centimes en euros
-      dayOfMonth: budgetCategory.prelevementDay ? Number(budgetCategory.prelevementDay) : undefined,
-      isActive: !budgetCategory.deletedAt,
+      id: budget.id.toString(),
+      life: this.mapLife(budget.life),
+      type: this.mapBudgetType(budget.type),
+      name: budget.name,
+      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
+      isActive: !budget.deletedAt,
       createdAt: new Date(),
       updatedAt: new Date()
     }
   }
 
-  async findActiveCategories(): Promise<BudgetCategory[]> {
+  async findActive(): Promise<budget[]> {
     if (!this.prisma) {
       throw new Error('Prisma client not initialized')
     }
 
-    const budgetCategories = await this.prisma.budget.findMany({
+    const budgets = await this.prisma.budget.findMany({
       where: { deletedAt: null },
       orderBy: [
         { life: 'asc' },
@@ -105,20 +105,20 @@ export class BudgetService {
       ]
     })
 
-    return budgetCategories.map((category: any) => ({
-      id: category.id.toString(),
-      life: this.mapLife(category.life),
-      type: this.mapBudgetType(category.type),
-      name: category.name,
-      amount: Number(category.amount) / 100, // Convertir de centimes en euros
-      dayOfMonth: category.prelevementDay ? Number(category.prelevementDay) : undefined,
-      isActive: !category.deletedAt,
+    return budgets.map((budget: any) => ({
+      id: budget.id.toString(),
+      life: this.mapLife(budget.life),
+      type: this.mapBudgetType(budget.type),
+      name: budget.name,
+      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
+      isActive: !budget.deletedAt,
       createdAt: new Date(),
       updatedAt: new Date()
     }))
   }
 
-  async findByMonthAndYear(year: number, month: number, life?: 'pro' | 'perso'): Promise<BudgetCategory[]> {
+  async findByMonthAndYear(year: number, month: number, life?: 'pro' | 'perso'): Promise<budget[]> {
     if (!this.prisma) {
       throw new Error('Prisma client not initialized')
     }
@@ -133,7 +133,7 @@ export class BudgetService {
       whereClause.life = life
     }
 
-    const budgetCategories = await this.prisma.budget.findMany({
+    const budgets = await this.prisma.budget.findMany({
       where: whereClause,
       orderBy: [
         { life: 'asc' },
@@ -142,15 +142,15 @@ export class BudgetService {
       ]
     })
 
-    return budgetCategories.map((category: any) => ({
-      id: category.id.toString(),
-      life: this.mapLife(category.life),
-      type: this.mapBudgetType(category.type),
-      name: category.name,
-      amount: Number(category.amount) / 100, // Convertir de centimes en euros
-      dayOfMonth: category.prelevementDay ? Number(category.prelevementDay) : undefined,
-      isActive: !category.deletedAt,
-      shouldBeCopiedNextMonth: category.shouldBeCopiedNextMonth,
+    return budgets.map((budget: any) => ({
+      id: budget.id.toString(),
+      life: this.mapLife(budget.life),
+      type: this.mapBudgetType(budget.type),
+      name: budget.name,
+      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
+      isActive: !budget.deletedAt,
+      shouldBeCopiedNextMonth: budget.shouldBeCopiedNextMonth,
       createdAt: new Date(),
       updatedAt: new Date()
     }))

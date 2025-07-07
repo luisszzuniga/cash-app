@@ -3,7 +3,7 @@ import { Life } from '~/core/types/life'
 import { BudgetType } from '~/core/types/budget'
 
 // Schéma pour la création/modification d'une catégorie de budget
-export const budgetCategoryFormSchema = z.object({
+export const BudgetFormSchema = z.object({
   life: z.nativeEnum(Life, {
     required_error: 'La vie est requise',
     invalid_type_error: 'Vie invalide'
@@ -24,4 +24,4 @@ export const budgetCategoryFormSchema = z.object({
     .optional()
 })
 
-export type BudgetCategoryFormData = z.infer<typeof budgetCategoryFormSchema> 
+export type BudgetFormData = z.infer<typeof BudgetFormSchema> 

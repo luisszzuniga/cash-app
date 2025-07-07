@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import type { BreadcrumbItem } from '@nuxt/ui'
 import BudgetChartsGrid from '~/components/budgets/BudgetChartsGrid.vue'
-import BudgetCategoryForm from '~/components/budgets/BudgetCategoryForm.vue'
+import BudgetForm from '~/components/budgets/BudgetForm.vue'
 
 definePageMeta({
   layout: 'default',

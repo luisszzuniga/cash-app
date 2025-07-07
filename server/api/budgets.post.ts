@@ -1,5 +1,5 @@
 import { BudgetService } from '~/core/services/budget.service'
-import { budgetCategoryFormSchema } from '~/core/schemas/budget.schema'
+import { BudgetFormSchema } from '~/core/schemas/budget.schema'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -10,12 +10,12 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Valider les données avec Zod
-    const validatedData = budgetCategoryFormSchema.parse(body)
+    const validatedData = BudgetFormSchema.parse(body)
 
     // Créer la catégorie de budget
-    const budgetCategory = await budgetService.create(validatedData)
+    const budget = await budgetService.create(validatedData)
 
-    return budgetCategory
+    return budget
   } catch (error: any) {
     console.error('Erreur lors de la création de la catégorie de budget:', error)
     

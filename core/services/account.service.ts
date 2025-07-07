@@ -1,9 +1,14 @@
 import { Life } from '../types/life'
 import { AccountType, type Account } from '../types/account'
 import { TransactionType } from '../types/transaction'
+import { EventService } from './event.service'
 
 export class AccountService {
-  constructor(private prisma: any) {}
+  private eventService: EventService
+
+  constructor(private prisma: any) {
+    this.eventService = new EventService(prisma)
+  }
 
   async findActiveAccounts(): Promise<Account[]> {
     if (!this.prisma) {
@@ -119,6 +124,8 @@ export class AccountService {
           date: new Date()
         }
       })
+
+        // On ne déclenche pas le recalcul du solde ici car le solde est = au dépôt initial
     }
 
     return {

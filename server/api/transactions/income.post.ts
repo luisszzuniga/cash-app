@@ -1,8 +1,10 @@
 import { TransactionService } from '~/core/services/transaction.service'
 import { addIncomeFormSchema } from '~/core/schemas/transaction.schema'
+import { EventService } from '~/core/services/event.service'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
+const eventService = new EventService(prisma)
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -17,7 +19,7 @@ export default defineEventHandler(async (event) => {
       accountId: validatedData.accountId,
       label: validatedData.label,
       amount: validatedData.amount,
-      date: validatedData.date
+      date: new Date(validatedData.date || new Date())
     })
 
     return transaction

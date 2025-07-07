@@ -1,6 +1,7 @@
 import { Life } from '../types/life'
 import { AccountType } from '../types/account'
 import { TransactionType } from '../types/transaction'
+import { EventService } from './event.service'
 import type { Account } from '../types/account'
 
 export interface Transaction {
@@ -15,7 +16,11 @@ export interface Transaction {
 }
 
 export class TransactionService {
-  constructor(private prisma: any) {}
+  private eventService: EventService
+
+  constructor(private prisma: any) {
+    this.eventService = new EventService(prisma)
+  }
 
   async addIncome(data: {
     accountId: string
@@ -51,15 +56,8 @@ export class TransactionService {
       }
     })
 
-    // Mettre à jour le solde du compte
-    await this.prisma.account.update({
-      where: { id: BigInt(data.accountId) },
-      data: {
-        balance: {
-          increment: data.amount
-        }
-      }
-    })
+    // Déclencher le recalcul du solde via le système d'événements
+    await this.eventService.triggerBalanceRecalculation(data.accountId)
 
     return {
       id: transaction.id.toString(),

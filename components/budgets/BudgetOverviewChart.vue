@@ -152,13 +152,13 @@
 </template>
 
 <script setup lang="ts">
-import type { BudgetCategoryWithSpent } from '~/core/types/budget'
+import type { BudgetWithSpent } from '~/core/types/budget'
 
 interface Props {
   life?: 'pro' | 'perso'
   year: number
   month: number
-  budgets: BudgetCategoryWithSpent[]
+  budgets: BudgetWithSpent[]
   pending?: boolean
   error?: any
 }
@@ -181,17 +181,17 @@ const chartColors = [
 
 // Calculs
 const totalBudget = computed(() => {
-  return props.budgets?.reduce((sum: number, budget: BudgetCategoryWithSpent) => sum + budget.amount, 0) || 0
+  return props.budgets?.reduce((sum: number, budget: BudgetWithSpent) => sum + budget.amount, 0) || 0
 })
 
 const expenseTotal = computed(() => {
-  return props.budgets?.reduce((sum: number, budget: BudgetCategoryWithSpent) => {
+  return props.budgets?.reduce((sum: number, budget: BudgetWithSpent) => {
     return budget.type === 'expense' ? sum + budget.amount : sum
   }, 0) || 0
 })
 
 const transferTotal = computed(() => {
-  return props.budgets?.reduce((sum: number, budget: BudgetCategoryWithSpent) => {
+  return props.budgets?.reduce((sum: number, budget: BudgetWithSpent) => {
     return budget.type === 'transfer' ? sum + budget.amount : sum
   }, 0) || 0
 })

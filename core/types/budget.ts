@@ -5,7 +5,7 @@ export enum BudgetType {
   TRANSFER = 'transfer'
 }
 
-export interface BudgetCategory {
+export interface budget {
   id: string
   life: Life
   type: BudgetType
@@ -18,11 +18,11 @@ export interface BudgetCategory {
   updatedAt: Date
 }
 
-export interface BudgetCategoryWithSpent extends BudgetCategory {
+export interface BudgetWithSpent extends budget {
   spentAmount: number
 }
 
-export interface CreateBudgetCategoryData {
+export interface CreateBudgetData {
   life: Life
   type: BudgetType
   name: string
@@ -30,7 +30,7 @@ export interface CreateBudgetCategoryData {
   dayOfMonth?: number
 }
 
-export interface UpdateBudgetCategoryData {
+export interface UpdateBudgetData {
   life: Life
   type: BudgetType
   name: string

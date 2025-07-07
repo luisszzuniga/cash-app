@@ -126,10 +126,10 @@
 </template>
 
 <script setup lang="ts">
-import type { BudgetCategory } from '~/core/types/budget'
+import type { budget } from '~/core/types/budget'
 
 interface Props {
-  budget: BudgetCategory & {
+  budget: budget & {
     shouldBeCopiedNextMonth?: boolean
     spentAmount?: number
   }
@@ -139,13 +139,16 @@ const props = defineProps<Props>()
 
 // Émettre les événements pour les actions
 const emit = defineEmits<{
-  edit: [budget: BudgetCategory]
-  delete: [budget: BudgetCategory]
+  edit: [budget: budget]
+  delete: [budget: budget]
 }>()
 
 // Calculs pour le doughnut
 const circumference = 2 * Math.PI * 40 // r = 40
-const spentAmount = computed(() => props.budget.spentAmount || 0)
+const spentAmount = computed(() => {
+  // Les dépenses sont stockées en valeurs négatives, on prend la valeur absolue
+  return Math.abs(props.budget.spentAmount || 0)
+})
 const consumptionPercentage = computed(() => {
   if (props.budget.amount === 0) return 0
   return Math.min(100, Math.round((spentAmount.value / props.budget.amount) * 100))
