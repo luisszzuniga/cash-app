@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # 🎯 Bonnes Pratiques Techniques - Cash App
 
 > **Objectif** : Centraliser toutes les bonnes pratiques techniques du projet pour garantir un cadre clair, cohérent et partagé entre tous les membres de l'équipe.
@@ -6,12 +11,12 @@
 
 ## 📋 Table des matières
 
-- [🔧 Pratiques Communes](#-pratiques-communes)
-- [🎨 Front-end](#-front-end)
-- [⚙️ Back-end](#️-back-end)
-- [🏗️ Architecture](#️-architecture)
-- [🧪 Tests](#-tests)
-- [📚 Ressources](#-ressources)
+- [🔧 Pratiques Communes](mdc:#-pratiques-communes)
+- [🎨 Front-end](mdc:#-front-end)
+- [⚙️ Back-end](mdc:#️-back-end)
+- [🏗️ Architecture](mdc:#️-architecture)
+- [🧪 Tests](mdc:#-tests)
+- [📚 Ressources](mdc:#-ressources)
 
 ---
 
@@ -475,11 +480,11 @@ describe('Users API', () => {
 
 ### Liens Utiles
 
-- [Documentation Nuxt 3](https://nuxt.com/docs)
-- [Guide TypeScript Nuxt](https://nuxt.com/docs/guide/concepts/typescript)
-- [Documentation Pinia](https://pinia.vuejs.org/)
-- [Documentation Prisma](https://www.prisma.io/docs)
-- [Documentation Zod](https://zod.dev/)
+- [Documentation Nuxt 3](mdc:https:/nuxt.com/docs)
+- [Guide TypeScript Nuxt](mdc:https:/nuxt.com/docs/guide/concepts/typescript)
+- [Documentation Pinia](mdc:https:/pinia.vuejs.org)
+- [Documentation Prisma](mdc:https:/www.prisma.io/docs)
+- [Documentation Zod](mdc:https:/zod.dev)
 
 ### Checklist de Code Review
 
