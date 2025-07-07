@@ -13,6 +13,8 @@ services:
     volumes:
       - ./:/app
     command: ["/entrypoint.sh"]
+    networks:
+      - cash-app-network
 
   # Service Nginx (reverse proxy)
   nginx:
