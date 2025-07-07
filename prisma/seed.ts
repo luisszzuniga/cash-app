@@ -317,7 +317,7 @@ async function main() {
       await prisma.transaction.create({
         data: {
           type: 'income',
-          amount: 200000, // 2000€ en centimes
+          amount: 2000.00, // 2000€ en centimes
           label: 'Salaire personnel',
           date: new Date(previousYear, month - 1, 5), // 5 du mois
           accountId: persoBankAccount.id
