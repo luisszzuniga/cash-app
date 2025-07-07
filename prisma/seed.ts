@@ -363,7 +363,7 @@ async function main() {
     console.log('\n🔄 Recalcul des soldes des comptes...');
     
     const allAccounts = await prisma.account.findMany();
-    const balanceService = new (await import('~/core/services/balance.service')).BalanceService(prisma);
+    const balanceService = new (await import('@/core/services/balance.service')).BalanceService(prisma);
 
     for (const account of allAccounts) {
       await balanceService.recalculateAccountBalance(account.id.toString());
