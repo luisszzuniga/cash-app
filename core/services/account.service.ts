@@ -129,6 +129,40 @@ export class AccountService {
       balance: account.balance,
       currency: 'EUR',
       description: account.description,
+      rib: account.rib || '',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  }
+
+  async update(id: string, data: {
+    name: string
+    description?: string
+    rib?: string
+  }): Promise<Account> {
+    if (!this.prisma) {
+      throw new Error('Prisma client not initialized')
+    }
+
+    const account = await this.prisma.account.update({
+      where: { id: BigInt(id) },
+      data: {
+        name: data.name,
+        description: data.description || '',
+        rib: data.rib || ''
+      }
+    })
+
+    return {
+      id: account.id.toString(),
+      name: account.name,
+      type: this.mapAccountType(account.type),
+      life: this.mapLife(account.life),
+      balance: account.balance,
+      currency: 'EUR',
+      description: account.description,
+      rib: account.rib || '',
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date()

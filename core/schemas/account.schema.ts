@@ -16,7 +16,6 @@ export const createAccountSchema = z.object({
     .max(1000, 'La description ne peut pas dépasser 1000 caractères')
     .optional(),
   rib: z.string()
-    .regex(/^FR\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{3}\s?\d{3}$/, 'Format RIB invalide (FRXX XXXX XXXX XXXX XXXX XXXX XXX)')
     .optional(),
   balance: z.number()
     .min(0, 'Le solde ne peut pas être négatif')
@@ -25,10 +24,38 @@ export const createAccountSchema = z.object({
 
 export type CreateAccountData = z.output<typeof createAccountSchema>
 
-export const createAccountFormSchema = createAccountSchema.extend({
-  life: z.nativeEnum(Life).default(Life.PRO),
-  type: z.nativeEnum(AccountType).default(AccountType.BANK),
-  balance: z.number().default(0)
+export const createAccountFormSchema = z.object({
+  life: z.nativeEnum(Life, {
+    required_error: 'La vie est requise',
+    invalid_type_error: 'Vie invalide'
+  }),
+  type: z.nativeEnum(AccountType, {
+    required_error: 'Le type est requis',
+    invalid_type_error: 'Type invalide'
+  }),
+  name: z.string()
+    .min(1, 'Le nom est requis')
+    .max(255, 'Le nom ne peut pas dépasser 255 caractères'),
+  description: z.string()
+    .max(1000, 'La description ne peut pas dépasser 1000 caractères')
+    .optional(),
+  rib: z.string()
+    .optional(),
+  balance: z.number()
+    .min(0, 'Le solde ne peut pas être négatif')
+    .max(1000000000, 'Le solde ne peut pas dépasser 1 milliard')
 })
 
-export type CreateAccountFormData = z.output<typeof createAccountFormSchema> 
+export const editAccountFormSchema = z.object({
+  name: z.string()
+    .min(1, 'Le nom est requis')
+    .max(255, 'Le nom ne peut pas dépasser 255 caractères'),
+  description: z.string()
+    .max(1000, 'La description ne peut pas dépasser 1000 caractères')
+    .optional(),
+  rib: z.string()
+    .optional(),
+})
+
+export type CreateAccountFormData = z.infer<typeof createAccountFormSchema>
+export type EditAccountFormData = z.infer<typeof editAccountFormSchema> 

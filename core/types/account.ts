@@ -17,6 +17,7 @@ export interface Account {
   balance: number
   currency: string
   description?: string
+  rib?: string
   isActive: boolean
   createdAt: Date
   updatedAt: Date

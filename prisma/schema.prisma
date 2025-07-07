@@ -25,7 +25,7 @@ model Account {
   type        String  @db.VarChar(255)
   name        String  @db.VarChar(255)
   description String  @db.Text
-  rib         String  @db.VarChar(255)
+  rib         String? @db.VarChar(255)
   balance     Float
 
   // Relations
