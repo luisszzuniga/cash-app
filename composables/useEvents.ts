@@ -4,6 +4,7 @@ import mitt from 'mitt'
 type Events = {
   'reload-accounts': void
   'reload-transactions': void
+  'reload-budgets': void
   // Ajouter d'autres événements ici au besoin
 }
 

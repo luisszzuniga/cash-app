@@ -58,6 +58,12 @@
               trigger-variant="soft"
               trigger-icon="i-heroicons-plus-circle"
             />
+            <BudgetCategoryForm
+              trigger-label="Nouvelle Catégorie"
+              trigger-color="warning"
+              trigger-variant="soft"
+              trigger-icon="i-heroicons-chart-pie"
+            />
             <UButton
               color="error"
               variant="soft"
@@ -79,6 +85,7 @@ import { Life } from '@/core/types/life'
 import { AccountType } from '@/core/types/account'
 import AddAccountForm from '~/components/accounts/AddAccountForm.vue'
 import AddIncomeForm from '~/components/transactions/AddIncomeForm.vue'
+import BudgetCategoryForm from '~/components/budgets/BudgetCategoryForm.vue'
 import KPICard from '~/components/ui/KPICard.vue'
 import { KPIView } from '~/core/types/kpi'
 import KPIGrid from '~/components/ui/KPIGrid.vue'
