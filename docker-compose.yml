@@ -10,8 +10,6 @@ services:
       - NUXT_PORT=3000
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-    extra_hosts:
-      - "app.local:host-gateway"
     volumes:
       - ./:/app
     networks:
@@ -32,6 +30,25 @@ services:
     networks:
       - cash-app-network
 
+  db:
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cash_app
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PORT: 3306
+    volumes:
+      - db_dev_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - cash-app-network
+
 networks:
   cash-app-network:
     driver: bridge
+
+volumes:
+  db_dev_data:
+    driver: local
