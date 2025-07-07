@@ -1,3 +1,118 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  email    String @db.VarChar(255)
+  password String @db.VarChar(255)
+
+  @@map("users")
+}
+
+model Account {
+  id          BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  life        String  @db.VarChar(255)
+  type        String  @db.VarChar(255)
+  name        String  @db.VarChar(255)
+  description String  @db.Text
+  rib         String  @db.VarChar(255)
+  balance     Float
+
+  // Relations
+  transactions Transaction[]
+  portfolioPerformanceHistory PortfolioPerformanceHistory[]
+
+  @@map("accounts")
+}
+
+model Budget {
+  id                      BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  life                    String    @db.VarChar(255)
+  year                    BigInt
+  month                   BigInt
+  type                    String    @db.VarChar(255)
+  name                    String    @db.VarChar(255)
+  amount                  BigInt
+  prelevementDay          BigInt?   @map("prelevement_day")
+  shouldBeCopiedNextMonth Boolean   @default(true) @map("should_be_copied_next_month")
+  shouldShowAlert         Boolean   @default(false) @map("should_show_alert")
+  deletedAt               DateTime? @map("deleted_at")
+
+  // Relations
+  transactions Transaction[]
+
+  @@map("budgets")
+}
+
+model Transaction {
+  id                           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  accountId                    BigInt    @map("account_id")
+  budgetId                     BigInt?   @map("budget_id")
+  type                         String    @db.VarChar(255)
+  amount                       Float
+  label                        String    @db.VarChar(255)
+  date                         DateTime  @db.Date
+  transferOppositeTransactionId BigInt?   @map("transfer_opposite_transaction_id")
+  deletedAt                    DateTime? @map("deleted_at")
+
+  // Relations
+  account Account @relation(fields: [accountId], references: [id])
+  budget  Budget? @relation(fields: [budgetId], references: [id])
+  portfolioOperations PortfolioOperation[]
+
+  @@map("transactions")
+}
+
+model Stock {
+  id              BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  code            String @db.VarChar(255)
+  exchange        String @db.VarChar(255)
+  name            String @db.VarChar(255)
+  lastClosedPrice Float  @map("last_closed_price")
+
+  // Relations
+  portfolioOperations PortfolioOperation[]
+
+  @@map("stocks")
+}
+
+model PortfolioOperation {
+  id                      BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  transactionId           BigInt    @map("transaction_id") @db.UnsignedBigInt
+  brokerFeesTransactionId BigInt?   @map("broker_fees_transaction_id")
+  stockId                 BigInt    @map("stock_id") @db.UnsignedBigInt
+  quantity                BigInt    @default(1) @db.UnsignedBigInt
+  type                    String    @db.VarChar(255)
+  price                   Float
+  deletedAt               DateTime? @map("deleted_at")
+
+  // Relations
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  stock       Stock       @relation(fields: [stockId], references: [id])
+
+  @@map("portfolio_operations")
+}
+
+model PortfolioPerformanceHistory {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  accountId BigInt   @map("account_id")
+  date      DateTime @db.Date
+  value     BigInt
+  performance BigInt
+  deletedAt DateTime @map("deleted_at")
+
+  // Relations
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@map("portfolio_performance_history")
+}
+

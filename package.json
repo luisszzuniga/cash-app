@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@nuxt/ui": "^3.2.0",
