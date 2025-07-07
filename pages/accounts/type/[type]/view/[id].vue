@@ -23,6 +23,22 @@
 
       <EditAccountForm v-if="account" :account="account" class="mt-4" />
     </UCard>
+
+    <!-- Tableau des transactions pour ce compte -->
+    <UCard>
+      <template #header>
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-gray-900">
+            Transactions
+          </h2>
+        </div>
+      </template>
+
+      <TransactionsTable 
+        :account-id="id"
+        :hide-account-column="true"
+      />
+    </UCard>
   </div>
 </template>
 
@@ -34,6 +50,7 @@ import { AccountType } from '~/core/types/account'
 import KPICard from '~/components/ui/KPICard.vue'
 import KPIGrid from '~/components/ui/KPIGrid.vue'
 import EditAccountForm from '~/components/accounts/EditAccountForm.vue'
+import TransactionsTable from '~/components/transactions/TransactionsTable.vue'
 
 definePageMeta({
   layout: 'default',
@@ -48,7 +65,7 @@ const id = route.params.id as string;
 const { data: account, pending, error, refresh } = await useLazyAsyncData(
   `account-${id}`,
   () => $fetch(`/api/accounts/${id}`)
-);
+) as { data: Ref<Account | null>, pending: Ref<boolean>, error: Ref<any>, refresh: () => void };
 
 const { on } = useEvents()
 on('reload-accounts', async () => {
