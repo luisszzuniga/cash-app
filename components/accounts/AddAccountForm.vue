@@ -212,6 +212,7 @@ async function onSubmit(event: FormSubmitEvent<CreateAccountFormData>) {
     // Émettre l'événement pour recharger les comptes
     const { emit } = useEvents()
     emit('reload-accounts')
+    emit('reload-transactions')
 
     await navigateTo('/dashboard')
   } catch (error: any) {

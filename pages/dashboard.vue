@@ -10,6 +10,37 @@
 
       <div v-if="user" class="space-y-6">
 
+        <!-- KPIs -->
+        <KPIGrid>
+          <KPICard
+            :view="KPIView.GLOBAL"
+            title="Solde Global"
+            subtitle="Tous les comptes"
+            description="Total de tous vos comptes"
+          />
+            <KPICard
+              :view="KPIView.TYPE_ONLY"
+              :account-type="AccountType.BANK"
+              title="Comptes Bancaires"
+              subtitle="Tous les comptes bancaires"
+              description="Total des comptes courants"
+            />
+            <KPICard
+              :view="KPIView.TYPE_ONLY"
+              :account-type="AccountType.SAVINGS"
+              title="Épargne"
+              subtitle="Tous les comptes d'épargne"
+              description="Total de l'épargne"
+            />
+            <KPICard
+              :view="KPIView.TYPE_ONLY"
+              :account-type="AccountType.PORTFOLIO"
+              title="Portefeuilles"
+              subtitle="Valeur de vos portefeuilles"
+              description="Total de vos portefeuilles"
+            />
+        </KPIGrid>
+
         <UCard>
           <template #header>
             <h3 class="text-lg font-semibold">Actions rapides</h3>
@@ -41,6 +72,9 @@ import type { BreadcrumbItem } from '@nuxt/ui'
 import { Life } from '@/core/types/life'
 import { AccountType } from '@/core/types/account'
 import AddAccountForm from '~/components/accounts/AddAccountForm.vue'
+import KPICard from '~/components/ui/KPICard.vue'
+import { KPIView } from '~/core/types/kpi'
+import KPIGrid from '~/components/ui/KPIGrid.vue'
 
 definePageMeta({
   layout: 'default',

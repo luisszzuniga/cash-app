@@ -3,6 +3,7 @@ import mitt from 'mitt'
 // Types d'événements disponibles
 type Events = {
   'reload-accounts': void
+  'reload-transactions': void
   // Ajouter d'autres événements ici au besoin
 }
 
