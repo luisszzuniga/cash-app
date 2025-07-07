@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Service de l'application Nuxt
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: cash-app-dev
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    command: ["/entrypoint.sh"]
+
+  # Service Nginx (reverse proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: cash-app-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - app
+    networks:
+      - cash-app-network
+
+networks:
+  cash-app-network:
+    driver: bridge
+
+volumes:
+  # Volume pour les données persistantes si nécessaire
+  app-data: 

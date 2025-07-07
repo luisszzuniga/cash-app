@@ -1,75 +1,55 @@
 # Nuxt Minimal Starter
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Docker (dev & prod)
 
-## Setup
-
-Make sure to install dependencies:
+### Développement local
 
 ```bash
-# npm
-npm install
+# Lancer en mode développement (hot reload, montages de volumes)
+docker-compose up --build
+# Accès: http://localhost:3000
+```
 
-# pnpm
+### Production (dokploy)
+
+```bash
+# Build et lancement en mode production (avec Nginx en reverse proxy)
+docker-compose -f docker-compose.dokploy.yml up --build
+# Accès: http://localhost
+```
+
+- Le même Dockerfile est utilisé pour les deux contextes.
+- Un seul entrypoint (`docker/entrypoint.sh`) gère dev/prod selon la variable d'environnement `NODE_ENV`.
+- Nginx n'est utilisé qu'en production (dokploy).
+
+---
+
+## Setup classique (hors Docker)
+
+Installez les dépendances :
+
+```bash
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### Dev local
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+pnpm run dev
 ```
 
-## Production
-
-Build the application for production:
+### Build prod
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+pnpm run build
 ```
 
-Locally preview production build:
+### Preview prod
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+pnpm run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+---
+
+Pour plus d'infos, voir la [doc Nuxt](https://nuxt.com/docs/getting-started/introduction).
