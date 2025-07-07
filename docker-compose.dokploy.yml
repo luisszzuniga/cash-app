@@ -46,9 +46,9 @@ services:
 networks:
   cash-app-network:
     driver: bridge
+  dokploy-network:
+    external: true
 
 volumes:
   db_dev_data:
     driver: local
-  dokploy-network:
-    external: true
