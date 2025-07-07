@@ -11,6 +11,7 @@ RUN corepack enable
 # Copie uniquement les fichiers nécessaires pour installer
 COPY ./package*.json ./
 COPY ./prisma ./prisma
+COPY ./core ./core
 
 # Installation
 RUN npm install
@@ -32,6 +33,7 @@ COPY --from=build /app/.output ./.output
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/core ./core
 
 # Port exposé par Nuxt
 EXPOSE 3000
