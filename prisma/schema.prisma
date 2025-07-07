@@ -42,7 +42,7 @@ model Budget {
   month                   BigInt
   type                    String    @db.VarChar(255)
   name                    String    @db.VarChar(255)
-  amount                  BigInt
+  amount                  Float
   prelevementDay          BigInt?   @map("prelevement_day")
   shouldBeCopiedNextMonth Boolean   @default(true) @map("should_be_copied_next_month")
   shouldShowAlert         Boolean   @default(false) @map("should_show_alert")

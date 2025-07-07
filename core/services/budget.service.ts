@@ -147,7 +147,7 @@ export class BudgetService {
       life: this.mapLife(budget.life),
       type: this.mapBudgetType(budget.type),
       name: budget.name,
-      amount: Number(budget.amount) / 100, // Convertir de centimes en euros
+      amount: Number(budget.amount), // Convertir de centimes en euros
       dayOfMonth: budget.prelevementDay ? Number(budget.prelevementDay) : undefined,
       isActive: !budget.deletedAt,
       shouldBeCopiedNextMonth: budget.shouldBeCopiedNextMonth,
